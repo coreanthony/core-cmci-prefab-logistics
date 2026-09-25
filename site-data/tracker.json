@@ -4,7 +4,7 @@
     "contractor": "Core CMCI",
     "sourceWorkbook": "Pre-fab Consultation Room - Core CMCI Logistics Plan.xlsx",
     "sourceDate": "2026-09-25",
-    "exportedAt": "2026-09-25T15:24:09-05:00",
+    "exportedAt": "2026-09-25T16:22:21-05:00",
     "recordCount": 65
   },
   "assumptions": {
@@ -66,6 +66,7 @@
   "stores": [
     {
       "region": "DFW",
+      "cluster": "149",
       "csNumber": "190032",
       "storeNumber": "10880",
       "address": "8580 N. MACARTHUR BLVD",
@@ -93,6 +94,7 @@
     },
     {
       "region": "Austin / Central",
+      "cluster": "147",
       "csNumber": "189469",
       "storeNumber": "06893",
       "address": "3569 FAR WEST BLVD.",
@@ -120,6 +122,7 @@
     },
     {
       "region": "Austin / Central",
+      "cluster": "147",
       "csNumber": "190027",
       "storeNumber": "10691",
       "address": "302 GATEWAY NORTH",
@@ -147,6 +150,7 @@
     },
     {
       "region": "DFW",
+      "cluster": "149",
       "csNumber": "190033",
       "storeNumber": "10642",
       "address": "1101 FM 2181",
@@ -174,6 +178,7 @@
     },
     {
       "region": "DFW",
+      "cluster": "149",
       "csNumber": "189985",
       "storeNumber": "10324",
       "address": "6420 GASTON AVE.",
@@ -201,6 +206,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "145",
       "csNumber": "190020",
       "storeNumber": "10996",
       "address": "9663 W. FM 1097 RD.",
@@ -228,6 +234,7 @@
     },
     {
       "region": "San Antonio",
+      "cluster": "148",
       "csNumber": "190030",
       "storeNumber": "10633",
       "address": "3502 SE MILITARY DR.",
@@ -255,6 +262,7 @@
     },
     {
       "region": "Austin / Central",
+      "cluster": "147",
       "csNumber": "190026",
       "storeNumber": "10875",
       "address": "3000 RM 1431",
@@ -284,6 +292,7 @@
     },
     {
       "region": "DFW",
+      "cluster": "149",
       "csNumber": "189620",
       "storeNumber": "08345",
       "address": "5195 LAKE RIDGE PKWY.",
@@ -311,6 +320,7 @@
     },
     {
       "region": "DFW",
+      "cluster": "149",
       "csNumber": "189473",
       "storeNumber": "06865",
       "address": "1099 W. MAIN ST",
@@ -338,6 +348,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "145",
       "csNumber": "189518",
       "storeNumber": "07092",
       "address": "110 W. 20TH ST.",
@@ -365,6 +376,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "146",
       "csNumber": "189171",
       "storeNumber": "01996",
       "address": "24950 FRANZ RD.",
@@ -394,6 +406,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "146",
       "csNumber": "190024",
       "storeNumber": "10671",
       "address": "10420 FM 1464",
@@ -421,6 +434,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "147",
       "csNumber": "190025",
       "storeNumber": "10637",
       "address": "6750 READING ROAD",
@@ -448,6 +462,7 @@
     },
     {
       "region": "San Antonio",
+      "cluster": "148",
       "csNumber": "190028",
       "storeNumber": "10947",
       "address": "1910 STATE HIGHWAY 46 W",
@@ -475,6 +490,7 @@
     },
     {
       "region": "San Antonio",
+      "cluster": "148",
       "csNumber": "190029",
       "storeNumber": "10750",
       "address": "9050 FM 1560 N",
@@ -502,6 +518,7 @@
     },
     {
       "region": "Austin / Central",
+      "cluster": "148",
       "csNumber": "189074",
       "storeNumber": "01430",
       "address": "2101 S. LAMAR BLVD., UNIT B",
@@ -529,6 +546,7 @@
     },
     {
       "region": "Austin / Central",
+      "cluster": "148",
       "csNumber": "189470",
       "storeNumber": "06822",
       "address": "5256 BURNET RD STE B",
@@ -556,6 +574,7 @@
     },
     {
       "region": "Austin / Central",
+      "cluster": "147",
       "csNumber": "189425",
       "storeNumber": "05776",
       "address": "105 WONDERWORLD DRIVE",
@@ -583,6 +602,7 @@
     },
     {
       "region": "DFW",
+      "cluster": "149",
       "csNumber": "189281",
       "storeNumber": "03187",
       "address": "1000 E. SANDY LAKE RD.",
@@ -610,6 +630,7 @@
     },
     {
       "region": "DFW",
+      "cluster": "149",
       "csNumber": "189528",
       "storeNumber": "07787",
       "address": "2220 CROSS TIMBERS RD",
@@ -637,6 +658,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "145",
       "csNumber": "189419",
       "storeNumber": "05839",
       "address": "8960 BARKER CYPRESS RD.",
@@ -664,6 +686,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "146",
       "csNumber": "189421",
       "storeNumber": "05884",
       "address": "12260 BELLAIRE BLVD.",
@@ -691,6 +714,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "147",
       "csNumber": "189523",
       "storeNumber": "07805",
       "address": "5757 NEW TERRITORY BLVD",
@@ -718,6 +742,7 @@
     },
     {
       "region": "Outlier",
+      "cluster": "145",
       "csNumber": "189977",
       "storeNumber": "10594",
       "address": "500 N. CARROLLTON AVE.",
@@ -747,6 +772,7 @@
     },
     {
       "region": "South TX",
+      "cluster": "146",
       "csNumber": "189422",
       "storeNumber": "05651",
       "address": "1602 EAST HIGHWAY 83",
@@ -777,6 +803,7 @@
     },
     {
       "region": "DFW",
+      "cluster": "149",
       "csNumber": "189474",
       "storeNumber": "06960",
       "address": "2142 N JOSEY LN",
@@ -804,6 +831,7 @@
     },
     {
       "region": "DFW",
+      "cluster": "149",
       "csNumber": "189529",
       "storeNumber": "07804",
       "address": "6401 W PARKER RD",
@@ -831,6 +859,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "147",
       "csNumber": "189279",
       "storeNumber": "03693",
       "address": "7950 S. GESSNER RD.",
@@ -858,6 +887,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "147",
       "csNumber": "189322",
       "storeNumber": "04474",
       "address": "2781 DULLES AVE.",
@@ -885,6 +915,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "145",
       "csNumber": "190021",
       "storeNumber": "10664",
       "address": "2180 WOODFOREST PARKWAY N.",
@@ -912,6 +943,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "145",
       "csNumber": "189516",
       "storeNumber": "07448",
       "address": "815 W. MAIN ST.",
@@ -939,6 +971,7 @@
     },
     {
       "region": "San Antonio",
+      "cluster": "148",
       "csNumber": "189984",
       "storeNumber": "10595",
       "address": "200 CIBOLO VALLEY DR.",
@@ -968,6 +1001,7 @@
     },
     {
       "region": "San Antonio",
+      "cluster": "148",
       "csNumber": "189526",
       "storeNumber": "07307",
       "address": "2018 CULEBRA RD.",
@@ -999,6 +1033,7 @@
     },
     {
       "region": "South TX",
+      "cluster": "146",
       "csNumber": "189978",
       "storeNumber": "10405",
       "address": "103 W. MONTE CRISTO RD.",
@@ -1029,6 +1064,7 @@
     },
     {
       "region": "South TX",
+      "cluster": "146",
       "csNumber": "189926",
       "storeNumber": "10107",
       "address": "2300 N CONWAY AVE.",
@@ -1061,6 +1097,7 @@
     },
     {
       "region": "DFW",
+      "cluster": "149",
       "csNumber": "189986",
       "storeNumber": "10271",
       "address": "1510 W. HICKORY ST.",
@@ -1092,6 +1129,7 @@
     },
     {
       "region": "DFW",
+      "cluster": "149",
       "csNumber": "189426",
       "storeNumber": "05799",
       "address": "6301 EL DORADO PKWY.",
@@ -1123,6 +1161,7 @@
     },
     {
       "region": "DFW",
+      "cluster": "148",
       "csNumber": "190031",
       "storeNumber": "10635",
       "address": "476 W. 1-30",
@@ -1154,6 +1193,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "145",
       "csNumber": "189519",
       "storeNumber": "07476",
       "address": "5401 WASHINGTON AVE",
@@ -1185,6 +1225,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "148",
       "csNumber": "189471",
       "storeNumber": "06655",
       "address": "1569 11TH ST",
@@ -1214,6 +1255,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "147",
       "csNumber": "189927",
       "storeNumber": "10177",
       "address": "2720 FM 1463",
@@ -1245,6 +1287,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "147",
       "csNumber": "189424",
       "storeNumber": "05972",
       "address": "5305 AVENUE I",
@@ -1276,6 +1319,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "146",
       "csNumber": "189979",
       "storeNumber": "10350",
       "address": "4523 L J PARKWAY",
@@ -1307,6 +1351,7 @@
     },
     {
       "region": "South TX",
+      "cluster": "146",
       "csNumber": "188919",
       "storeNumber": "00248",
       "address": "2121 W. TRENTON RD.",
@@ -1339,6 +1384,7 @@
     },
     {
       "region": "Austin / Central",
+      "cluster": "147",
       "csNumber": "189928",
       "storeNumber": "10221",
       "address": "2502 TRIMMIER RD.",
@@ -1370,6 +1416,7 @@
     },
     {
       "region": "Austin / Central",
+      "cluster": "147",
       "csNumber": "189982",
       "storeNumber": "10585",
       "address": "3300 W. STAN SCHLUETER LOOP",
@@ -1401,6 +1448,7 @@
     },
     {
       "region": "DFW",
+      "cluster": "148",
       "csNumber": "189472",
       "storeNumber": "06965",
       "address": "7203 SKILLMAN ST.",
@@ -1431,6 +1479,7 @@
     },
     {
       "region": "DFW",
+      "cluster": "149",
       "csNumber": "189987",
       "storeNumber": "10523",
       "address": "270 STONEBROOK PKWY.",
@@ -1462,6 +1511,7 @@
     },
     {
       "region": "DFW",
+      "cluster": "149",
       "csNumber": "189427",
       "storeNumber": "05952",
       "address": "2313 W. UNIVERSITY AVE.",
@@ -1493,6 +1543,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "145",
       "csNumber": "189521",
       "storeNumber": "07475",
       "address": "1350 KINGWOOD DR",
@@ -1524,6 +1575,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "146",
       "csNumber": "189423",
       "storeNumber": "05519",
       "address": "1295 EAST LEAGUE CITY PKWY.",
@@ -1556,6 +1608,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "145",
       "csNumber": "190022",
       "storeNumber": "11067",
       "address": "2735 SIENNA PARKWAY",
@@ -1587,6 +1640,7 @@
     },
     {
       "region": "San Antonio",
+      "cluster": "148",
       "csNumber": "189983",
       "storeNumber": "10579",
       "address": "4600 BROADWAY ST.",
@@ -1618,6 +1672,7 @@
     },
     {
       "region": "South TX",
+      "cluster": "146",
       "csNumber": "189190",
       "storeNumber": "02328",
       "address": "3205 S. ALAMEDA ST.",
@@ -1650,6 +1705,7 @@
     },
     {
       "region": "Austin / Central",
+      "cluster": "147",
       "csNumber": "188921",
       "storeNumber": "00357",
       "address": "1701 E. PARMER LN.",
@@ -1681,6 +1737,7 @@
     },
     {
       "region": "Austin / Central",
+      "cluster": "147",
       "csNumber": "189024",
       "storeNumber": "00928",
       "address": "800 WEST OLD SETTLERS BLVD",
@@ -1712,6 +1769,7 @@
     },
     {
       "region": "DFW",
+      "cluster": "149",
       "csNumber": "189530",
       "storeNumber": "07562",
       "address": "9075 LEGACY DR.",
@@ -1743,6 +1801,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "146",
       "csNumber": "189980",
       "storeNumber": "10544",
       "address": "5902 FM 1463 RD.",
@@ -1774,6 +1833,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "146",
       "csNumber": "190023",
       "storeNumber": "10604",
       "address": "4489 COUNTY ROAD 94",
@@ -1805,6 +1865,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "145",
       "csNumber": "189420",
       "storeNumber": "06000",
       "address": "4101 FAIRMONT PKWY.,",
@@ -1836,6 +1897,7 @@
     },
     {
       "region": "Houston",
+      "cluster": "145",
       "csNumber": "189522",
       "storeNumber": "07120",
       "address": "11600 SHADOW CREEK PKWY.",
@@ -1867,6 +1929,7 @@
     },
     {
       "region": "Outlier",
+      "cluster": "149",
       "csNumber": "189116",
       "storeNumber": "01543",
       "address": "7301 HILLSIDE RD.",
@@ -1899,6 +1962,7 @@
     },
     {
       "region": "San Antonio",
+      "cluster": "148",
       "csNumber": "189524",
       "storeNumber": "07808",
       "address": "4805 MEDICAL DR",
@@ -1930,6 +1994,7 @@
     },
     {
       "region": "San Antonio",
+      "cluster": "148",
       "csNumber": "189525",
       "storeNumber": "07784",
       "address": "110 S KING ST",

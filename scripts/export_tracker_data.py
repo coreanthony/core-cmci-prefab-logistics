@@ -107,6 +107,7 @@ def main():
         stores.append(
             {
                 "region": region,
+                "cluster": clean(source["Cluster"]),
                 "csNumber": cs_number,
                 "storeNumber": clean(source["5 Digit Store"] or source["Store #"]).zfill(5),
                 "address": clean(source["Address"]),

@@ -1,0 +1,6 @@
+node_modules/
+__pycache__/
+recs.json
+*.pyc
+.sites-runtime/
+.DS_Store

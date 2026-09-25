@@ -1,0 +1,79 @@
+name: Store completion record
+description: Submit completed-work photos and store sign-off for one CVS location.
+title: "Store completion - "
+labels:
+  - store-completion
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Complete every required field. This record remains in the private Core CMCI repository and does not replace any contract-required closeout form.
+  - type: input
+    id: store_number
+    attributes:
+      label: Store number
+      placeholder: "00000"
+    validations:
+      required: true
+  - type: input
+    id: cs_number
+    attributes:
+      label: CS number
+      placeholder: "190000"
+    validations:
+      required: true
+  - type: input
+    id: address
+    attributes:
+      label: Store address
+    validations:
+      required: true
+  - type: textarea
+    id: completed_work
+    attributes:
+      label: Completed work
+      description: State the installed scope, remaining punch items, and material exceptions.
+    validations:
+      required: true
+  - type: textarea
+    id: photos
+    attributes:
+      label: Completion photos
+      description: Drag and drop clear completed-work photos into this field. Include overall, detail, and deficiency views as applicable.
+    validations:
+      required: true
+  - type: input
+    id: manager_name
+    attributes:
+      label: Store manager name
+    validations:
+      required: true
+  - type: input
+    id: manager_title
+    attributes:
+      label: Store manager title
+    validations:
+      required: true
+  - type: input
+    id: signoff_date
+    attributes:
+      label: Store sign-off date
+      placeholder: MM/DD/YYYY
+    validations:
+      required: true
+  - type: textarea
+    id: signoff_notes
+    attributes:
+      label: Store sign-off notes
+      description: Record accepted work, exceptions, or unresolved punch items.
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: The named store representative reviewed the completed work and the exceptions stated above.
+          required: true
+        - label: The uploaded photos accurately represent the site condition at sign-off.
+          required: true

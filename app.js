@@ -1,4 +1,4 @@
-const state = { stores: [], filtered: [], map: null, markers: null, data: null };
+const state = { stores: [], filtered: [], map: null, markers: null, data: null, enrichment: {} };
 
 const els = {
   search: document.querySelector("#search"),
@@ -31,6 +31,17 @@ const clusterColors = {
 };
 
 const clusterColor = cluster => clusterColors[String(cluster)] || "#56636b";
+
+const escapeHtml = value => String(value ?? "").replace(/[&<>'"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char]);
+
+const detailValue = (value, missingLabel = "Not provided") => {
+  if (value === null || value === undefined || value === "" || (Array.isArray(value) && !value.length)) {
+    return `<span class="detail-value missing">${escapeHtml(missingLabel)}</span>`;
+  }
+  return `<span class="detail-value">${escapeHtml(Array.isArray(value) ? value.join(", ") : value)}</span>`;
+};
+
+const detailRows = rows => `<dl class="detail-list">${rows.map(([label, value, missingLabel]) => `<div><dt>${escapeHtml(label)}</dt><dd>${detailValue(value, missingLabel)}</dd></div>`).join("")}</dl>`;
 
 function setOptions(select, values, format = value => value) {
   values.forEach(value => {
@@ -66,7 +77,8 @@ function renderMap(stores) {
   stores.forEach(store => {
     if (!Number.isFinite(store.latitude) || !Number.isFinite(store.longitude)) return;
     const marker = L.marker([store.latitude, store.longitude], { icon: markerIcon(store) });
-    marker.bindPopup(`<strong>Store ${store.storeNumber} · ${store.city}</strong><span>${store.region} · Cluster ${store.cluster}</span><span>Ship ${fmtDate(store.shipBy)} · MSD ${fmtDate(store.msd)}</span><span>${store.units} units · ${store.configStatus === "TBD" ? "Config TBD" : "Config confirmed"}</span>`);
+    marker.bindTooltip(`Store ${store.storeNumber} · ${store.city} · Cluster ${store.cluster}`, { direction: "top", offset: [0, -8] });
+    marker.on("click", () => openStoreDetail(store));
     marker.addTo(state.markers);
     points.push([store.latitude, store.longitude]);
   });
@@ -91,12 +103,73 @@ function renderTable(stores) {
       <td class="mono">${fmtDate(store.msd)}</td>
       <td class="mono">${store.units}${store.configStatus === "TBD" ? "*" : ""}</td>
       <td><span class="status-chip ${store.flags.length ? "watch" : ""}">${status}</span></td>`;
-    tr.addEventListener("click", () => state.map.setView([store.latitude, store.longitude], 11));
+    tr.setAttribute("aria-label", `Open full details for store ${store.storeNumber} in ${store.city}`);
+    tr.addEventListener("click", () => openStoreDetail(store));
     tr.addEventListener("keydown", event => { if (event.key === "Enter") tr.click(); });
     els.rows.append(tr);
   });
   els.empty.hidden = stores.length !== 0;
   document.querySelector("#result-count").textContent = stores.length;
+}
+
+function openStoreDetail(store) {
+  const dialog = document.querySelector("#store-dialog");
+  const enrichment = state.enrichment[store.csNumber] || {};
+  const address = `${store.address}, ${store.city}, ${store.state} ${store.zip}`;
+  const coordinates = Number.isFinite(store.latitude) && Number.isFinite(store.longitude) ? `${store.latitude.toFixed(5)}, ${store.longitude.toFixed(5)}` : "";
+  const mapsUrl = coordinates ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${store.latitude},${store.longitude}`)}` : "";
+  const issueTitle = `Store ${store.storeNumber} completion - CS ${store.csNumber}`;
+  const completionSubmitUrl = `https://github.com/coreanthony/core-cmci-prefab-logistics/issues/new?template=store-completion.yml&title=${encodeURIComponent(issueTitle)}`;
+  const completionPhotos = Array.isArray(enrichment.completionPhotos) ? enrichment.completionPhotos : [];
+  const photoMarkup = completionPhotos.length
+    ? `<div class="completion-photos">${completionPhotos.map((photo, index) => `<a href="${escapeHtml(photo)}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(photo)}" alt="Store ${escapeHtml(store.storeNumber)} completion photo ${index + 1}"></a>`).join("")}</div>`
+    : `<p class="detail-value missing">No completion photos submitted</p>`;
+  const flags = store.flags.length ? store.flags.join("; ") : "Ready on stated assumptions";
+
+  document.querySelector("#store-dialog-context").textContent = `${store.region} · Cluster ${store.cluster} · CS ${store.csNumber}`;
+  document.querySelector("#store-dialog-title").textContent = `Store ${store.storeNumber} · ${store.city}`;
+  document.querySelector("#store-detail-content").innerHTML = `
+    <div class="detail-summary" style="border-top:5px solid ${clusterColor(store.cluster)};padding-top:16px">
+      <div><h3>CVS Store ${escapeHtml(store.storeNumber)}</h3><p class="detail-address">${escapeHtml(address)}</p></div>
+      ${mapsUrl ? `<a class="detail-map-link" href="${mapsUrl}" target="_blank" rel="noopener noreferrer">Open GPS location</a>` : ""}
+    </div>
+    <div class="detail-grid">
+      <section class="detail-section"><h3>Store identity</h3>${detailRows([
+        ["Store number", store.storeNumber], ["CS number", store.csNumber], ["Region", store.region], ["Cluster", store.cluster], ["Store type", store.storeType]
+      ])}</section>
+      <section class="detail-section"><h3>Location</h3>${detailRows([
+        ["Street address", store.address], ["City / State / ZIP", `${store.city}, ${store.state} ${store.zip}`], ["GPS coordinates", coordinates], ["Coordinate basis", store.locationBasis], ["Nearest cross street", enrichment.nearestCrossStreet, "Field verification required"]
+      ])}</section>
+      <section class="detail-section"><h3>Contacts</h3>${detailRows([
+        ["Project manager", store.projectManager], ["PM phone number", enrichment.pmPhone, "Not in source package"], ["Store manager", enrichment.storeManager, "Not in source package"], ["Store manager phone", enrichment.storeManagerPhone, "Not in source package"]
+      ])}</section>
+      <section class="detail-section"><h3>Schedule and access</h3>${detailRows([
+        ["Ship by", fmtDate(store.shipBy, { month: "short", day: "numeric", year: "numeric" })], ["Deliver by", fmtDate(store.deliverBy, { month: "short", day: "numeric", year: "numeric" })], ["MSD", fmtDate(store.msd, { month: "short", day: "numeric", year: "numeric" })], ["CSD", fmtDate(store.csd, { month: "short", day: "numeric", year: "numeric" })], ["Best time to miss traffic", enrichment.bestTrafficWindow, "Route review required"], ["Receiving window", enrichment.receivingWindow, "Store confirmation required"]
+      ])}</section>
+      <section class="detail-section"><h3>Execution requirements</h3>${detailRows([
+        ["Unit configuration", store.configRaw || "", store.configStatus === "TBD" ? `TBD; ${store.units} default units carried` : "Not provided"], ["Planned units", store.units], ["Labor model", store.laborModel], ["MV vendor", store.mvVendor], ["Merchandising hours", store.merchandisingHours], ["Tools needed", enrichment.toolsNeeded, "Tool list not issued"]
+      ])}</section>
+      <section class="detail-section"><h3>Controls and notes</h3>${detailRows([
+        ["Layout status", store.layoutStatus], ["Current flags", flags], ["Source notes", store.sourceNotes, "No source note"], ["Field notes", enrichment.fieldNotes, "No field note"]
+      ])}</section>
+    </div>
+    <section class="completion-record">
+      <div class="completion-heading">
+        <div><p class="eyebrow">CLOSEOUT EVIDENCE</p><h3>Completion photos and store sign-off</h3></div>
+        <a class="detail-map-link" href="${enrichment.completionIssueUrl ? escapeHtml(enrichment.completionIssueUrl) : completionSubmitUrl}" target="_blank" rel="noopener noreferrer">${enrichment.completionIssueUrl ? "View completion record" : "Submit photos + sign-off"}</a>
+      </div>
+      ${photoMarkup}
+      ${detailRows([
+        ["Completion status", enrichment.completionStatus, "Not submitted"],
+        ["Store representative", enrichment.signedByName, "No sign-off on file"],
+        ["Representative title", enrichment.signedByTitle, "No sign-off on file"],
+        ["Sign-off date", enrichment.signedAt, "No sign-off on file"],
+        ["Sign-off notes", enrichment.signOffNotes, "No sign-off on file"]
+      ])}
+      <p class="completion-note">Submission opens a controlled record in the private GitHub repository. GitHub login and repository access are required. Photos are attached there; this dashboard displays them after the verified record is linked in the enrichment data.</p>
+    </section>
+    <p class="detail-data-note">Yellow fields require verified field, PM, store, vendor, or route information before operational reliance.</p>`;
+  dialog.showModal();
 }
 
 function renderFilteredSummary(stores) {
@@ -238,9 +311,16 @@ function renderClusterNavigation(stores) {
 
 async function load() {
   try {
-    const response = await fetch("site-data/tracker.json", { cache: "no-store" });
+    const [response, enrichmentResponse] = await Promise.all([
+      fetch("site-data/tracker.json", { cache: "no-store" }),
+      fetch("site-data/store-enrichment.json", { cache: "no-store" }),
+    ]);
     if (!response.ok) throw new Error(`Data request failed: ${response.status}`);
     const data = await response.json();
+    if (enrichmentResponse.ok) {
+      const enrichment = await enrichmentResponse.json();
+      state.enrichment = enrichment.stores || {};
+    }
     state.data = data;
     state.stores = data.stores;
     renderSummary(data);
@@ -269,6 +349,11 @@ document.querySelector("#reset-filters").addEventListener("click", () => {
   els.week.value = "";
   els.risk.value = "";
   setDashboardView("");
+});
+
+document.querySelector("#store-dialog-close").addEventListener("click", () => document.querySelector("#store-dialog").close());
+document.querySelector("#store-dialog").addEventListener("click", event => {
+  if (event.target === event.currentTarget) event.currentTarget.close();
 });
 
 load();

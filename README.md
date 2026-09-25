@@ -11,6 +11,10 @@ Logistics plan and store map for the 65 Core CMCI stores in the CVS pre-fab cons
 
 The Master Dashboard includes dedicated submenu views for Clusters 145 through 149. Cluster selections update the portfolio metrics, store schedule, workload summary, and map together.
 
+Selecting any store row or map marker opens a full detail panel. Source-backed fields come from the logistics workbook. PM phone, store manager, nearest cross street, traffic window, receiving window, tool list, and field notes are maintained separately in `site-data/store-enrichment.json`, keyed by CS number, so workbook refreshes do not overwrite verified field intelligence.
+
+Completed-work photos and store sign-off are submitted through the private repository's `Store completion record` issue form. After review, link the issue and approved photo URLs in the store's enrichment record using `completionIssueUrl`, `completionPhotos`, `completionStatus`, `signedByName`, `signedByTitle`, `signedAt`, and `signOffNotes`.
+
 ## Tracker refresh
 
 1. Update the logistics workbook.

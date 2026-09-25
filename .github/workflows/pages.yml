@@ -24,7 +24,7 @@ jobs:
         run: |
           mkdir -p _site/site-data _site/assets
           cp index.html styles.css app.js _site/
-          cp site-data/tracker.json _site/site-data/
+          cp site-data/*.json _site/site-data/
           cp assets/core-cmci-logo.jpg _site/assets/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

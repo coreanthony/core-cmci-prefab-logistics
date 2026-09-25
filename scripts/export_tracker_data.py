@@ -131,6 +131,7 @@ def main():
                 "latitude": mapped["Latitude"],
                 "longitude": mapped["Longitude"],
                 "locationBasis": location_basis,
+                "sourceNotes": clean(source["Notes"]),
                 "flags": flags,
             }
         )

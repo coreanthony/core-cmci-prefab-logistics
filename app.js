@@ -30,7 +30,16 @@ const clusterColors = {
   "149": "#9a6a32",
 };
 
+const clusterNames = {
+  "145": "Houston",
+  "146": "South Texas",
+  "147": "Austin / Central",
+  "148": "San Antonio",
+  "149": "DFW",
+};
+
 const clusterColor = cluster => clusterColors[String(cluster)] || "#56636b";
+const clusterLabel = cluster => `Cluster ${cluster} · ${clusterNames[String(cluster)] || "Operating Area"}`;
 
 const escapeHtml = value => String(value ?? "").replace(/[&<>'"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char]);
 
@@ -65,7 +74,7 @@ function markerIcon(store) {
   const needsReview = hasFlag(store, "location verification");
   return L.divIcon({
     className: "",
-    html: `<div title="Cluster ${store.cluster}" style="width:18px;height:18px;border:3px solid ${needsReview ? "#b93b2f" : "#fff"};border-radius:50%;background:${clusterColor(store.cluster)};box-shadow:0 1px 5px rgba(0,0,0,.42)"></div>`,
+    html: `<div title="${clusterLabel(store.cluster)}" style="width:18px;height:18px;border:3px solid ${needsReview ? "#b93b2f" : "#fff"};border-radius:50%;background:${clusterColor(store.cluster)};box-shadow:0 1px 5px rgba(0,0,0,.42)"></div>`,
     iconSize: [18, 18],
     iconAnchor: [9, 9],
   });
@@ -77,7 +86,7 @@ function renderMap(stores) {
   stores.forEach(store => {
     if (!Number.isFinite(store.latitude) || !Number.isFinite(store.longitude)) return;
     const marker = L.marker([store.latitude, store.longitude], { icon: markerIcon(store) });
-    marker.bindTooltip(`Store ${store.storeNumber} · ${store.city} · Cluster ${store.cluster}`, { direction: "top", offset: [0, -8] });
+    marker.bindTooltip(`Store ${store.storeNumber} · ${store.city} · ${clusterLabel(store.cluster)}`, { direction: "top", offset: [0, -8] });
     marker.on("click", () => openStoreDetail(store));
     marker.addTo(state.markers);
     points.push([store.latitude, store.longitude]);
@@ -97,7 +106,7 @@ function renderTable(stores) {
     tr.innerHTML = `
       <td class="store-cell"><strong>${store.storeNumber} · ${store.city}</strong><span>CS ${store.csNumber} · ${store.state} ${store.zip}</span></td>
       <td>${store.region}</td>
-      <td><span class="cluster-chip" style="--cluster-color:${clusterColor(store.cluster)}">${store.cluster}</span></td>
+      <td><span class="cluster-chip" style="--cluster-color:${clusterColor(store.cluster)}">${clusterLabel(store.cluster)}</span></td>
       <td class="mono">${fmtDate(store.shipBy)}</td>
       <td class="mono">${fmtDate(store.deliverBy)}</td>
       <td class="mono">${fmtDate(store.msd)}</td>
@@ -126,7 +135,7 @@ function openStoreDetail(store) {
     : `<p class="detail-value missing">No completion photos submitted</p>`;
   const flags = store.flags.length ? store.flags.join("; ") : "Ready on stated assumptions";
 
-  document.querySelector("#store-dialog-context").textContent = `${store.region} · Cluster ${store.cluster} · CS ${store.csNumber}`;
+  document.querySelector("#store-dialog-context").textContent = `${store.region} · ${clusterLabel(store.cluster)} · CS ${store.csNumber}`;
   document.querySelector("#store-dialog-title").textContent = `Store ${store.storeNumber} · ${store.city}`;
   document.querySelector("#store-detail-content").innerHTML = `
     <div class="detail-summary" style="border-top:5px solid ${clusterColor(store.cluster)};padding-top:16px">
@@ -135,7 +144,7 @@ function openStoreDetail(store) {
     </div>
     <div class="detail-grid">
       <section class="detail-section"><h3>Store identity</h3>${detailRows([
-        ["Store number", store.storeNumber], ["CS number", store.csNumber], ["Region", store.region], ["Cluster", store.cluster], ["Store type", store.storeType]
+        ["Store number", store.storeNumber], ["CS number", store.csNumber], ["Region", store.region], ["Cluster", `${store.cluster} · ${clusterNames[String(store.cluster)] || "Operating Area"}`], ["Store type", store.storeType]
       ])}</section>
       <section class="detail-section"><h3>Location</h3>${detailRows([
         ["Street address", store.address], ["City / State / ZIP", `${store.city}, ${store.state} ${store.zip}`], ["GPS coordinates", coordinates], ["Coordinate basis", store.locationBasis], ["Nearest cross street", enrichment.nearestCrossStreet, "Field verification required"]
@@ -166,7 +175,7 @@ function openStoreDetail(store) {
         ["Sign-off date", enrichment.signedAt, "No sign-off on file"],
         ["Sign-off notes", enrichment.signOffNotes, "No sign-off on file"]
       ])}
-      <p class="completion-note">Submission opens a controlled record in the private GitHub repository. GitHub login and repository access are required. Photos are attached there; this dashboard displays them after the verified record is linked in the enrichment data.</p>
+      <p class="completion-note">Submission opens a controlled record in the GitHub repository. GitHub login is required to submit. Photos are attached there; this dashboard displays them after the verified record is linked in the enrichment data.</p>
     </section>
     <p class="detail-data-note">Yellow fields require verified field, PM, store, vendor, or route information before operational reliance.</p>`;
   dialog.showModal();
@@ -280,7 +289,7 @@ function renderClusterLegends(stores) {
     clusters.forEach(cluster => {
       const item = document.createElement("span");
       item.className = "cluster-key";
-      item.innerHTML = `<i class="cluster-swatch" style="background:${clusterColor(cluster)}"></i>Cluster ${cluster}`;
+      item.innerHTML = `<i class="cluster-swatch" style="background:${clusterColor(cluster)}"></i>${clusterLabel(cluster)}`;
       container.append(item);
     });
   });
@@ -289,7 +298,7 @@ function renderClusterLegends(stores) {
 function setDashboardView(cluster = "") {
   els.cluster.value = cluster;
   document.querySelectorAll("[data-cluster-view]").forEach(button => button.classList.toggle("active", button.dataset.clusterView === cluster));
-  document.querySelector("#page-title").textContent = cluster ? `Cluster ${cluster} Dashboard` : "Master Dashboard";
+  document.querySelector("#page-title").textContent = cluster ? `${clusterLabel(cluster)} Dashboard` : "Master Dashboard";
   applyFilters();
 }
 
@@ -302,7 +311,7 @@ function renderClusterNavigation(stores) {
     button.className = "board-nav-button";
     button.type = "button";
     button.dataset.clusterView = cluster;
-    button.innerHTML = `Cluster ${cluster} <span aria-label="${count} stores">(${count})</span>`;
+    button.innerHTML = `${clusterLabel(cluster)} <span aria-label="${count} stores">(${count})</span>`;
     button.addEventListener("click", () => setDashboardView(cluster));
     nav.append(button);
   });
@@ -327,7 +336,7 @@ async function load() {
     renderOpenItems(data);
     renderAssumptions(data);
     setOptions(els.region, [...new Set(state.stores.map(store => store.region))].sort());
-    setOptions(els.cluster, [...new Set(state.stores.map(store => store.cluster))].sort((a, b) => Number(a) - Number(b)), value => `Cluster ${value}`);
+    setOptions(els.cluster, [...new Set(state.stores.map(store => store.cluster))].sort((a, b) => Number(a) - Number(b)), clusterLabel);
     setOptions(els.week, [...new Set(state.stores.map(store => startOfWeek(store.msd)))].sort(), value => `Week of ${fmtDate(value)}`);
     renderClusterLegends(state.stores);
     renderClusterNavigation(state.stores);

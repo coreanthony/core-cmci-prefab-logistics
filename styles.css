@@ -22,10 +22,10 @@ button, input, select { font: inherit; }
 
 .app-header { min-height: 104px; padding: 14px clamp(20px, 4vw, 64px); display: flex; align-items: center; justify-content: space-between; gap: 24px; color: var(--navy); background: #fff; border-bottom: 3px solid var(--navy); }
 .brand-logo { width: 122px; height: auto; display: block; }
-.header-family { text-align: right; }
+.header-family { flex: 1; padding-right: 122px; text-align: center; }
 .header-family strong, .header-family span { display: block; }
-.header-family strong { color: var(--navy); font-family: "Aptos Display", Aptos, "Segoe UI", system-ui, sans-serif; font-size: 1.45rem; }
-.header-family span { margin-top: 3px; color: var(--muted); font-size: .82rem; letter-spacing: .04em; }
+.header-family strong { color: var(--navy); font-family: "Aptos Display", Aptos, "Segoe UI", system-ui, sans-serif; font-size: clamp(1.2rem, 2vw, 1.8rem); line-height: 1.15; }
+.header-family span { margin-top: 5px; color: var(--muted); font-size: .82rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
 .board-nav { min-height: 50px; padding: 0 clamp(20px, 4vw, 64px); display: flex; align-items: stretch; gap: 0; overflow-x: auto; color: #fff; background: var(--navy); }
 .cluster-nav { display: flex; align-items: stretch; }
 .board-nav-button { min-width: max-content; padding: 0 16px; border: 0; border-right: 1px solid rgba(255,255,255,.18); color: #fff; background: transparent; font-weight: 600; cursor: pointer; }
@@ -168,7 +168,8 @@ footer { min-height: 58px; padding: 18px clamp(20px, 4vw, 64px); display: flex; 
 @media (max-width: 720px) {
   .app-header { min-height: 88px; padding: 12px 18px; }
   .brand-logo { width: 92px; }
-  .header-family strong { font-size: 1.05rem; }
+  .header-family { padding-right: 0; text-align: right; }
+  .header-family strong { font-size: .94rem; line-height: 1.18; }
   .header-family span { font-size: .72rem; }
   .board-nav { padding: 0 12px; }
   .nav-status { display: none; }

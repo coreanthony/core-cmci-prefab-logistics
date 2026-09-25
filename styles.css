@@ -107,6 +107,28 @@ tbody tr:focus-visible { outline: 3px solid rgba(79, 129, 189, .35); outline-off
 .leaflet-popup-content strong { font-size: .95rem; }
 .leaflet-popup-content span { display: block; margin-top: 3px; color: #556169; }
 
+.logistics-panel { margin-top: 12px; }
+.logistics-heading .panel-note { max-width: 680px; text-align: right; }
+.logistics-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-bottom: 1px solid var(--line); }
+.logistics-summary > div { padding: 15px 18px; border-right: 1px solid var(--line); }
+.logistics-summary > div:last-child { border-right: 0; }
+.logistics-summary span, .logistics-summary strong { display: block; }
+.logistics-summary span { color: var(--muted); font-size: .74rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+.logistics-summary strong { margin-top: 4px; color: var(--navy); font: 700 1.55rem/1 "Segoe UI", system-ui, sans-serif; }
+.logistics-summary .hotel-metric { background: #fffdf7; }
+.logistics-table-wrap { max-height: 560px; }
+.logistics-table .route-row td:first-child { box-shadow: inset 4px 0 0 var(--cluster-color); }
+.route-row { cursor: pointer; }
+.route-row strong, .route-subline { display: block; }
+.route-subline { margin-top: 3px; color: var(--muted); font-size: .72rem; white-space: normal; }
+.route-missing { color: var(--warning-text); font-size: .76rem; font-weight: 700; }
+.hotel-status { display: inline-block; padding: 4px 7px; font-size: .7rem; font-weight: 700; }
+.hotel-status.required { color: var(--warning-text); background: var(--warning); }
+.hotel-status.confirmed { color: var(--success); background: #e9f4ef; }
+.hotel-status.local { color: var(--muted); background: #edf0f2; }
+.table-link { color: var(--navy); font-weight: 700; }
+.logistics-basis { margin: 0; padding: 12px 18px; color: var(--muted); background: #f8fafb; border-top: 1px solid var(--line); font-size: .78rem; }
+
 .bottom-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-top: 12px; }
 .count-badge { min-width: 32px; padding: 5px 8px; color: #fff; background: var(--navy); text-align: center; font: 700 .78rem/1 "Segoe UI", system-ui, sans-serif; }
 .open-item { display: grid; grid-template-columns: 1.05fr 2fr .75fr; gap: 18px; padding: 16px 18px; border-bottom: 1px solid #e8ebed; }
@@ -182,6 +204,11 @@ footer { min-height: 58px; padding: 18px clamp(20px, 4vw, 64px); display: flex; 
   .kpi strong { font-size: 1.9rem; }
   .filters { grid-template-columns: 1fr; }
   .right-rail, .bottom-grid { grid-template-columns: 1fr; }
+  .logistics-heading { align-items: flex-start; flex-direction: column; }
+  .logistics-heading .panel-note { text-align: left; }
+  .logistics-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .logistics-summary > div:nth-child(2) { border-right: 0; }
+  .logistics-summary > div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
   .open-item { grid-template-columns: 1fr; gap: 6px; }
   .open-item span { text-align: left; }
   .panel-note { display: none; }

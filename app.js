@@ -1,4 +1,4 @@
-const state = { stores: [], filtered: [], map: null, markers: null, data: null, enrichment: {} };
+const state = { stores: [], filtered: [], map: null, markers: null, data: null, enrichment: {}, routeByCs: new Map() };
 
 const els = {
   search: document.querySelector("#search"),
@@ -40,6 +40,47 @@ const clusterNames = {
 
 const clusterColor = cluster => clusterColors[String(cluster)] || "#56636b";
 const clusterLabel = cluster => `Cluster ${cluster} · ${clusterNames[String(cluster)] || "Operating Area"}`;
+
+const toRadians = degrees => degrees * Math.PI / 180;
+
+function airMiles(from, to) {
+  if (![from.latitude, from.longitude, to.latitude, to.longitude].every(Number.isFinite)) return null;
+  const earthRadiusMiles = 3958.8;
+  const latitudeDelta = toRadians(to.latitude - from.latitude);
+  const longitudeDelta = toRadians(to.longitude - from.longitude);
+  const a = Math.sin(latitudeDelta / 2) ** 2 + Math.cos(toRadians(from.latitude)) * Math.cos(toRadians(to.latitude)) * Math.sin(longitudeDelta / 2) ** 2;
+  return 2 * earthRadiusMiles * Math.asin(Math.sqrt(a));
+}
+
+function buildRoutePlan(stores) {
+  const routeByCs = new Map();
+  const clusters = [...new Set(stores.map(store => store.cluster))].sort((a, b) => Number(a) - Number(b));
+  clusters.forEach(cluster => {
+    const remaining = stores.filter(store => store.cluster === cluster);
+    const dates = [...new Set(remaining.map(store => store.msd))].sort();
+    let prior = null;
+    let sequence = 0;
+    dates.forEach(msd => {
+      const dateStores = remaining.filter(store => store.msd === msd);
+      while (dateStores.length) {
+        dateStores.sort((a, b) => {
+          if (!prior) return `${a.city}|${a.storeNumber}`.localeCompare(`${b.city}|${b.storeNumber}`);
+          return (airMiles(prior, a) ?? Number.MAX_VALUE) - (airMiles(prior, b) ?? Number.MAX_VALUE);
+        });
+        const store = dateStores.shift();
+        sequence += 1;
+        const directMiles = prior ? airMiles(prior, store) : null;
+        const roadMiles = directMiles === null ? null : Math.round(directMiles * 1.18);
+        const driveHours = roadMiles === null ? null : Math.round((roadMiles / 52) * 10) / 10;
+        const longHaul = roadMiles !== null && (roadMiles >= 240 || driveHours >= 4.5);
+        const locationReview = Boolean(prior && (hasFlag(prior, "location verification") || hasFlag(store, "location verification")));
+        routeByCs.set(store.csNumber, { store, from: prior, sequence, roadMiles, driveHours, longHaul, locationReview });
+        prior = store;
+      }
+    });
+  });
+  return routeByCs;
+}
 
 const escapeHtml = value => String(value ?? "").replace(/[&<>'"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char]);
 
@@ -121,6 +162,52 @@ function renderTable(stores) {
   document.querySelector("#result-count").textContent = stores.length;
 }
 
+function hotelPlan(leg) {
+  const enrichment = state.enrichment[leg.store.csNumber] || {};
+  if (!leg.longHaul) return { label: leg.from ? "Not indicated" : "Origin required", className: "local" };
+  return {
+    label: enrichment.hotelName || "Selection required",
+    className: enrichment.hotelName ? "confirmed" : "required",
+  };
+}
+
+function renderLogisticsPlan(stores) {
+  const legs = stores.map(store => state.routeByCs.get(store.csNumber)).filter(Boolean).sort((a, b) => Number(a.store.cluster) - Number(b.store.cluster) || a.sequence - b.sequence);
+  const movements = legs.filter(leg => leg.from);
+  const totalMiles = movements.reduce((sum, leg) => sum + (leg.roadMiles || 0), 0);
+  const hotels = movements.filter(leg => leg.longHaul).length;
+  const reviews = movements.filter(leg => leg.locationReview).length;
+  document.querySelector("#route-leg-count").textContent = movements.length;
+  document.querySelector("#route-mile-count").textContent = totalMiles.toLocaleString("en-US");
+  document.querySelector("#hotel-night-count").textContent = hotels;
+  document.querySelector("#route-review-count").textContent = reviews;
+
+  const rows = document.querySelector("#route-rows");
+  rows.replaceChildren();
+  legs.forEach(leg => {
+    const hotel = hotelPlan(leg);
+    const routeUrl = leg.from && Number.isFinite(leg.from.latitude) && Number.isFinite(leg.store.latitude)
+      ? `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(`${leg.from.latitude},${leg.from.longitude}`)}&destination=${encodeURIComponent(`${leg.store.latitude},${leg.store.longitude}`)}`
+      : "";
+    const tr = document.createElement("tr");
+    tr.className = "route-row";
+    tr.style.setProperty("--cluster-color", clusterColor(leg.store.cluster));
+    tr.innerHTML = `
+      <td class="mono">${leg.sequence}</td>
+      <td class="mono">${fmtDate(leg.store.msd)}</td>
+      <td><span class="cluster-chip" style="--cluster-color:${clusterColor(leg.store.cluster)}">${clusterLabel(leg.store.cluster)}</span></td>
+      <td>${leg.from ? `<strong>${escapeHtml(leg.from.storeNumber)} · ${escapeHtml(leg.from.city)}</strong>` : `<span class="route-missing">Crew origin required</span>`}</td>
+      <td><strong>${escapeHtml(leg.store.storeNumber)} · ${escapeHtml(leg.store.city)}</strong><span class="route-subline">${escapeHtml(leg.store.address)}</span></td>
+      <td class="mono">${leg.roadMiles === null ? "—" : leg.roadMiles.toLocaleString("en-US")}</td>
+      <td class="mono">${leg.driveHours === null ? "—" : `${leg.driveHours.toFixed(1)} hr`}</td>
+      <td><span class="hotel-status ${hotel.className}">${escapeHtml(hotel.label)}</span>${leg.longHaul ? `<span class="route-subline">1-night planning allowance</span>` : ""}</td>
+      <td>${routeUrl ? `<a class="table-link" href="${routeUrl}" target="_blank" rel="noopener noreferrer">Directions</a>` : `<span class="route-missing">Set origin</span>`}</td>`;
+    tr.addEventListener("click", event => { if (!event.target.closest("a")) openStoreDetail(leg.store); });
+    rows.append(tr);
+  });
+  document.querySelector("#route-empty-state").hidden = legs.length !== 0;
+}
+
 function openStoreDetail(store) {
   const dialog = document.querySelector("#store-dialog");
   const enrichment = state.enrichment[store.csNumber] || {};
@@ -134,6 +221,8 @@ function openStoreDetail(store) {
     ? `<div class="completion-photos">${completionPhotos.map((photo, index) => `<a href="${escapeHtml(photo)}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(photo)}" alt="Store ${escapeHtml(store.storeNumber)} completion photo ${index + 1}"></a>`).join("")}</div>`
     : `<p class="detail-value missing">No completion photos submitted</p>`;
   const flags = store.flags.length ? store.flags.join("; ") : "Ready on stated assumptions";
+  const routeLeg = state.routeByCs.get(store.csNumber);
+  const hotel = routeLeg ? hotelPlan(routeLeg) : { label: "Not evaluated" };
 
   document.querySelector("#store-dialog-context").textContent = `${store.region} · ${clusterLabel(store.cluster)} · CS ${store.csNumber}`;
   document.querySelector("#store-dialog-title").textContent = `Store ${store.storeNumber} · ${store.city}`;
@@ -154,6 +243,18 @@ function openStoreDetail(store) {
       ])}</section>
       <section class="detail-section"><h3>Schedule and access</h3>${detailRows([
         ["Ship by", fmtDate(store.shipBy, { month: "short", day: "numeric", year: "numeric" })], ["Deliver by", fmtDate(store.deliverBy, { month: "short", day: "numeric", year: "numeric" })], ["MSD", fmtDate(store.msd, { month: "short", day: "numeric", year: "numeric" })], ["CSD", fmtDate(store.csd, { month: "short", day: "numeric", year: "numeric" })], ["Best time to miss traffic", enrichment.bestTrafficWindow, "Route review required"], ["Receiving window", enrichment.receivingWindow, "Store confirmation required"]
+      ])}</section>
+      <section class="detail-section"><h3>Inbound logistics and hotel</h3>${detailRows([
+        ["Route sequence", routeLeg ? `${routeLeg.sequence} of ${state.stores.filter(item => item.cluster === store.cluster).length}` : ""],
+        ["Inbound from", routeLeg?.from ? `Store ${routeLeg.from.storeNumber} · ${routeLeg.from.city}, ${routeLeg.from.state}` : "", "Crew origin required"],
+        ["Estimated road miles", routeLeg?.roadMiles === null || routeLeg?.roadMiles === undefined ? "" : `${routeLeg.roadMiles} miles`, "Origin route not established"],
+        ["Estimated drive time", routeLeg?.driveHours === null || routeLeg?.driveHours === undefined ? "" : `${routeLeg.driveHours.toFixed(1)} hours`, "Origin route not established"],
+        ["Long-haul disposition", routeLeg?.longHaul ? "Hotel allowance required" : "No hotel indicated by current threshold"],
+        ["Hotel property", routeLeg?.longHaul ? enrichment.hotelName : "", routeLeg?.longHaul ? "Hotel selection required" : "Not required"],
+        ["Hotel address", routeLeg?.longHaul ? enrichment.hotelAddress : "", routeLeg?.longHaul ? "Not selected" : "Not required"],
+        ["Check-in / check-out", routeLeg?.longHaul && (enrichment.hotelCheckIn || enrichment.hotelCheckOut) ? `${enrichment.hotelCheckIn || "TBD"} / ${enrichment.hotelCheckOut || "TBD"}` : "", routeLeg?.longHaul ? "Dates not confirmed" : "Not required"],
+        ["Rooms / confirmation", routeLeg?.longHaul && (enrichment.hotelRooms || enrichment.hotelConfirmation) ? `${enrichment.hotelRooms || "TBD"} / ${enrichment.hotelConfirmation || "TBD"}` : "", routeLeg?.longHaul ? "Reservation not confirmed" : "Not required"],
+        ["Hotel status", routeLeg?.longHaul ? (enrichment.hotelStatus || hotel.label) : "Not indicated"]
       ])}</section>
       <section class="detail-section"><h3>Execution requirements</h3>${detailRows([
         ["Unit configuration", store.configRaw || "", store.configStatus === "TBD" ? `TBD; ${store.units} default units carried` : "Not provided"], ["Planned units", store.units], ["Labor model", store.laborModel], ["MV vendor", store.mvVendor], ["Merchandising hours", store.merchandisingHours], ["Tools needed", enrichment.toolsNeeded, "Tool list not issued"]
@@ -243,6 +344,7 @@ function applyFilters() {
   });
   renderFilteredSummary(state.filtered);
   renderTable(state.filtered);
+  renderLogisticsPlan(state.filtered);
   renderRegionLoad(state.filtered);
   renderMap(state.filtered);
 }
@@ -271,6 +373,9 @@ function renderAssumptions(data) {
     ["Default units when config is blank", a.defaultUnits],
     ["Delivery buffer", `${a.deliveryBufferBusinessDays} business days`],
     ["Install duration", `${a.installDaysPerStore} crew-day`],
+    ["Road-distance factor", "1.18 × straight line"],
+    ["Planning travel speed", "52 mph"],
+    ["Hotel trigger", "240 miles or 4.5 hours"],
     ...Object.entries(a.transitBusinessDays).map(([region, days]) => [`${region} transit`, `${days} business days`]),
   ];
   const list = document.querySelector("#assumption-list");
@@ -332,6 +437,7 @@ async function load() {
     }
     state.data = data;
     state.stores = data.stores;
+    state.routeByCs = buildRoutePlan(state.stores);
     renderSummary(data);
     renderOpenItems(data);
     renderAssumptions(data);

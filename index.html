@@ -82,6 +82,27 @@
       </aside>
     </section>
 
+    <section class="panel logistics-panel" aria-labelledby="logistics-plan-title">
+      <div class="panel-heading logistics-heading">
+        <div><p class="eyebrow">STORE-TO-STORE LOGISTICS</p><h2 id="logistics-plan-title">Route and hotel plan</h2></div>
+        <p class="panel-note">Schedule-first sequencing. Mileage and drive time are planning estimates; confirm the route, crew origin, hotel, and reservation before dispatch.</p>
+      </div>
+      <div class="logistics-summary" aria-label="Logistics planning summary">
+        <div><span>Store movements</span><strong id="route-leg-count">—</strong></div>
+        <div><span>Estimated route miles</span><strong id="route-mile-count">—</strong></div>
+        <div class="hotel-metric"><span>Hotel allowances</span><strong id="hotel-night-count">—</strong></div>
+        <div><span>Route reviews</span><strong id="route-review-count">—</strong></div>
+      </div>
+      <div class="table-wrap logistics-table-wrap">
+        <table class="logistics-table">
+          <thead><tr><th>Seq.</th><th>MSD</th><th>Cluster</th><th>From</th><th>Destination</th><th>Est. miles</th><th>Est. drive</th><th>Hotel plan</th><th>Route</th></tr></thead>
+          <tbody id="route-rows"></tbody>
+        </table>
+        <div class="empty-state" id="route-empty-state" hidden>No route legs match the current filters.</div>
+      </div>
+      <p class="logistics-basis">Planning basis: straight-line distance × 1.18 road factor, 52 mph average travel speed, and one hotel-night allowance for a leg estimated at 240+ miles or 4.5+ hours. This is not a live navigation result or a reservation.</p>
+    </section>
+
     <section class="panel map-panel">
       <div class="panel-heading">
         <div><p class="eyebrow">FIELD COVERAGE</p><h2>Store map</h2></div>
